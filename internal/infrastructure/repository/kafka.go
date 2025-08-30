@@ -7,14 +7,20 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// KafkaRepository implements the ProducerRepository interface for Kafka.
-type KafkaRepository struct {
-	kafkaRepository *kafka.Repository
+// AnysherKafkaClient defines the methods used from the external kafka.Repository
+type AnysherKafkaClient interface {
+	Send(ctx context.Context, message kafka.Message) error
+	Close()
 }
 
-func NewKafkaRepository(kafkaRepository *kafka.Repository) domain.ProducerRepository {
+// KafkaRepository implements the ProducerRepository interface for Kafka.
+type KafkaRepository struct {
+	kafkaClient AnysherKafkaClient
+}
+
+func NewKafkaRepository(kafkaClient AnysherKafkaClient) domain.ProducerRepository {
 	return &KafkaRepository{
-		kafkaRepository: kafkaRepository,
+		kafkaClient: kafkaClient,
 	}
 }
 
@@ -27,7 +33,7 @@ func (r *KafkaRepository) Produce(ctx context.Context, message domain.Message) e
 		Content: message.Content,
 	}
 	// Send the message
-	if err := r.kafkaRepository.Send(ctx, payload); err != nil {
+	if err := r.kafkaClient.Send(ctx, payload); err != nil {
 		log.Err(err).Msg("Failed to send message to Kafka")
 		return err
 	}
@@ -36,5 +42,5 @@ func (r *KafkaRepository) Produce(ctx context.Context, message domain.Message) e
 
 // Close closes the Kafka producer.
 func (r *KafkaRepository) Close() {
-	r.kafkaRepository.Close()
+	r.kafkaClient.Close()
 }

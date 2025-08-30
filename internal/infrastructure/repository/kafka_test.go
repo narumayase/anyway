@@ -12,30 +12,29 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockAnysherKafkaRepository is a mock implementation of the external kafka.Repository
-// We define an interface here because we cannot mock a concrete type from an external module directly.
-type MockAnysherKafkaRepository struct {
+// MockAnysherKafkaClient is a mock implementation of the AnysherKafkaClient interface
+type MockAnysherKafkaClient struct {
 	mock.Mock
 }
 
-// Send mocks the Send method of kafka.Repository
-func (m *MockAnysherKafkaRepository) Send(ctx context.Context, message kafka.Message) error {
+// Send mocks the Send method of AnysherKafkaClient
+func (m *MockAnysherKafkaClient) Send(ctx context.Context, message kafka.Message) error {
 	args := m.Called(ctx, message)
 	return args.Error(0)
 }
 
-// Close mocks the Close method of kafka.Repository
-func (m *MockAnysherKafkaRepository) Close() {
+// Close mocks the Close method of AnysherKafkaClient
+func (m *MockAnysherKafkaClient) Close() {
 	m.Called()
 }
 
 // TestNewKafkaRepository tests the NewKafkaRepository constructor
 func TestNewKafkaRepository(t *testing.T) {
-	// Create a mock anysher kafka repository
-	mockAnysherKafkaRepo := new(MockAnysherKafkaRepository)
+	// Create a mock anysher kafka client
+	mockAnysherKafkaClient := new(MockAnysherKafkaClient)
 
 	// Create a new KafkaRepository instance
-	kRepository := repository.NewKafkaRepository(mockAnysherKafkaRepo)
+	kRepository := repository.NewKafkaRepository(mockAnysherKafkaClient)
 
 	// Assert that the repository is not nil
 	assert.NotNil(t, kRepository)
@@ -43,14 +42,14 @@ func TestNewKafkaRepository(t *testing.T) {
 
 // TestProduceSuccess tests the Produce method when anysher kafka Send succeeds
 func TestProduceSuccess(t *testing.T) {
-	// Create a mock anysher kafka repository
-	mockAnysherKafkaRepo := new(MockAnysherKafkaRepository)
+	// Create a mock anysher kafka client
+	mockAnysherKafkaClient := new(MockAnysherKafkaClient)
 
 	// Expect Send to be called and return nil (success)
-	mockAnysherKafkaRepo.On("Send", mock.Anything, mock.Anything).Return(nil).Once()
+	mockAnysherKafkaClient.On("Send", mock.Anything, mock.Anything).Return(nil).Once()
 
 	// Create a new KafkaRepository instance
-	kRepository := repository.NewKafkaRepository(mockAnysherKafkaRepo)
+	kRepository := repository.NewKafkaRepository(mockAnysherKafkaClient)
 
 	// Define a sample domain message
 	domainMessage := domain.Message{
@@ -66,22 +65,22 @@ func TestProduceSuccess(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Assert that the expected methods were called on the mock
-	mockAnysherKafkaRepo.AssertExpectations(t)
+	mockAnysherKafkaClient.AssertExpectations(t)
 }
 
 // TestProduceError tests the Produce method when anysher kafka Send returns an error
 func TestProduceError(t *testing.T) {
-	// Create a mock anysher kafka repository
-	mockAnysherKafkaRepo := new(MockAnysherKafkaRepository)
+	// Create a mock anysher kafka client
+	mockAnysherKafkaClient := new(MockAnysherKafkaClient)
 
 	// Define an error to be returned by anysher kafka Send
 	expectedErr := errors.New("failed to send message to anysher kafka")
 
 	// Expect Send to be called and return an error
-	mockAnysherKafkaRepo.On("Send", mock.Anything, mock.Anything).Return(expectedErr).Once()
+	mockAnysherKafkaClient.On("Send", mock.Anything, mock.Anything).Return(expectedErr).Once()
 
 	// Create a new KafkaRepository instance
-	kRepository := repository.NewKafkaRepository(mockAnysherKafkaRepo)
+	kRepository := repository.NewKafkaRepository(mockAnysherKafkaClient)
 
 	// Define a sample domain message
 	domainMessage := domain.Message{
@@ -97,23 +96,23 @@ func TestProduceError(t *testing.T) {
 	assert.EqualError(t, err, expectedErr.Error())
 
 	// Assert that the expected methods were called on the mock
-	mockAnysherKafkaRepo.AssertExpectations(t)
+	mockAnysherKafkaClient.AssertExpectations(t)
 }
 
 // TestClose tests the Close method
 func TestClose(t *testing.T) {
-	// Create a mock anysher kafka repository
-	mockAnysherKafkaRepo := new(MockAnysherKafkaRepository)
+	// Create a mock anysher kafka client
+	mockAnysherKafkaClient := new(MockAnysherKafkaClient)
 
 	// Expect Close to be called
-	mockAnysherKafkaRepo.On("Close").Return().Once()
+	mockAnysherKafkaClient.On("Close").Return().Once()
 
 	// Create a new KafkaRepository instance
-	kRepository := repository.NewKafkaRepository(mockAnysherKafkaRepo)
+	kRepository := repository.NewKafkaRepository(mockAnysherKafkaClient)
 
 	// Call the Close method
 	kRepository.Close()
 
 	// Assert that the expected methods were called on the mock
-	mockAnysherKafkaRepo.AssertExpectations(t)
+	mockAnysherKafkaClient.AssertExpectations(t)
 }

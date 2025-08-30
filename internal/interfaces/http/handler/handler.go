@@ -3,6 +3,7 @@ package handler
 import (
 	"anyway/internal/domain"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -22,7 +23,10 @@ func NewHandler(usecase domain.Usecase) *Handler {
 func (h *Handler) Send(c *gin.Context) {
 	var request domain.Message
 
+	log.Debug().Msgf("Incoming message: %s", c.Request.Body)
+
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error().Err(err).Msg(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request format: " + err.Error(),
 		})
@@ -30,6 +34,7 @@ func (h *Handler) Send(c *gin.Context) {
 	}
 	err := h.producerUsecase.Send(c.Request.Context(), request)
 	if err != nil {
+		log.Error().Err(err).Msg(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error processing message: " + err.Error(),
 		})

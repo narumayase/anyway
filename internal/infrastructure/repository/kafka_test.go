@@ -53,13 +53,15 @@ func TestProduceSuccess(t *testing.T) {
 
 	// Define a sample domain message
 	domainMessage := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
 		Content: []byte("test-content"),
 	}
 
+	ctx := context.WithValue(context.Background(), "X-Correlation-Id", "test-correlation-id")
+	ctx = context.WithValue(ctx, "X-Routing-Id", "test-routing-id")
+	ctx = context.WithValue(ctx, "X-Request-Id", "test-request-id")
+
 	// Call the Produce method
-	err := kRepository.Produce(context.Background(), domainMessage)
+	err := kRepository.Produce(ctx, domainMessage)
 
 	// Assert that no error is returned
 	assert.NoError(t, err)
@@ -84,8 +86,6 @@ func TestProduceError(t *testing.T) {
 
 	// Define a sample domain message
 	domainMessage := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
 		Content: []byte("test-content"),
 	}
 

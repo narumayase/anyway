@@ -56,8 +56,6 @@ func TestSendSuccess(t *testing.T) {
 
 	// Define a sample message
 	message := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
 		Content: []byte("test-content"),
 	}
 
@@ -87,9 +85,7 @@ func TestSendProduceError(t *testing.T) {
 
 	// Define a sample message
 	message := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
-		Content: []byte("test-content"),	}
+		Content: []byte("test-content")}
 
 	// Call the Send method
 	err := usecase.Send(context.Background(), message)

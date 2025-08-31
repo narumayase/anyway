@@ -63,8 +63,6 @@ func TestSendSuccess(t *testing.T) {
 
 	// Create a sample request body
 	message := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
 		Content: []byte("test-content"),
 	}
 	jsonBody, _ := json.Marshal(message)
@@ -140,8 +138,6 @@ func TestSendUsecaseError(t *testing.T) {
 
 	// Create a sample request body
 	message := domain.Message{
-		Key:     "test-key",
-		Headers: map[string]string{"header1": "value1"},
 		Content: []byte("test-content"),
 	}
 	jsonBody, _ := json.Marshal(message)

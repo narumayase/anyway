@@ -3,7 +3,7 @@ package http
 import (
 	"anyway/internal/domain"
 	"anyway/internal/interfaces/http/handler"
-	"anyway/internal/interfaces/http/middleware"
+	"github.com/narumayase/anysher/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +16,8 @@ func SetupRouter(chatUseCase domain.Usecase) *gin.Engine {
 	router.Use(middleware.Logger())
 	router.Use(middleware.CORS())
 	router.Use(middleware.ErrorHandler())
+	router.Use(middleware.HeadersToContext())
+	router.Use(middleware.RequestIDToLogger())
 
 	// Create the controller
 	chatHandler := handler.NewHandler(chatUseCase)

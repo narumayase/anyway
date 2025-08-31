@@ -1,6 +1,7 @@
 package config
 
 import (
+	anysherlog "github.com/narumayase/anysher/log"
 	"os"
 	"testing"
 
@@ -191,7 +192,7 @@ func TestSetLogLevel(t *testing.T) {
 			}
 
 			// Call setLogLevel
-			setLogLevel()
+			anysherlog.SetLogLevel()
 
 			// Verify the global log level was set correctly
 			actual := zerolog.GlobalLevel()

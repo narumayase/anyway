@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/joho/godotenv v1.5.1
-	github.com/narumayase/anysher v0.0.0-20250831225635-69b975cda81b
+	github.com/narumayase/anysher v0.0.0-20250831234548-8016214b60a0
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.10.0
 )

@@ -25,6 +25,5 @@ func (uc *UsecaseImpl) Send(ctx context.Context, message domain.Message) error {
 		log.Error().Err(err).Msg("Failed to send message")
 		return err
 	}
-	
 	return nil
 }

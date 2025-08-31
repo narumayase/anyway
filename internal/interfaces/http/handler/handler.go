@@ -23,8 +23,6 @@ func NewHandler(usecase domain.Usecase) *Handler {
 func (h *Handler) Send(c *gin.Context) {
 	var request domain.Message
 
-	log.Debug().Msgf("Incoming message: %s", c.Request.Body)
-
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error().Err(err).Msg(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{

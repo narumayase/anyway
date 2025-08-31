@@ -26,10 +26,17 @@ func NewKafkaRepository(kafkaClient AnysherKafkaClient) domain.ProducerRepositor
 
 // Produce a message to a Kafka topic.
 func (r *KafkaRepository) Produce(ctx context.Context, message domain.Message) error {
+	correlationID := ctx.Value("X-Correlation-Id").(string)
+	routingID := ctx.Value("X-Routing-Id").(string)
+	requestId := ctx.Value("X-Request-Id").(string)
+
 	// Create a payload
 	payload := kafka.Message{
-		Key:     message.Key,
-		Headers: message.Headers,
+		Key: routingID,
+		Headers: map[string]string{
+			"correlation_id": correlationID,
+			"request_id":     requestId,
+		},
 		Content: message.Content,
 	}
 	// Send the message

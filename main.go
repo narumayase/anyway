@@ -13,7 +13,7 @@ func main() {
 	// Load configuration
 	cfg := config.Load()
 
-	kafkaRepository, err := kafka.NewRepository(kafka.NewConfiguration())
+	kafkaRepository, err := kafka.NewRepository()
 	if err != nil {
 		log.Fatal().Msgf("failed to create Kafka repository: %v", err)
 	}

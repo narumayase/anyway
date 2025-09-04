@@ -3,7 +3,6 @@ package repository
 import (
 	"anyway/internal/domain"
 	"context"
-	"github.com/google/uuid"
 	"github.com/narumayase/anysher/kafka"
 	"github.com/rs/zerolog/log"
 )
@@ -27,9 +26,9 @@ func NewKafkaRepository(kafkaClient AnysherKafkaClient) domain.ProducerRepositor
 
 // Produce a message to a Kafka topic.
 func (r *KafkaRepository) Produce(ctx context.Context, message domain.Message) error {
-	correlationID := r.getContextStringValue(ctx, "X-Correlation-Id")
-	routingID := r.getContextStringValue(ctx, "X-Routing-Id")
-	requestId := r.getContextStringValue(ctx, "X-Request-Id")
+	correlationID, _ := ctx.Value("X-Correlation-Id").(string)
+	routingID, _ := ctx.Value("X-Routing-Id").(string)
+	requestId := ctx.Value("X-Request-Id").(string)
 
 	// Create a payload
 	payload := kafka.Message{
@@ -51,13 +50,4 @@ func (r *KafkaRepository) Produce(ctx context.Context, message domain.Message) e
 // Close closes the Kafka producer.
 func (r *KafkaRepository) Close() {
 	r.kafkaClient.Close()
-}
-
-func (r *KafkaRepository) getContextStringValue(ctx context.Context, key string) string {
-	var contextValue string
-	contextValue, ok := ctx.Value(key).(string)
-	if !ok {
-		contextValue = uuid.NewString()
-	}
-	return contextValue
 }
